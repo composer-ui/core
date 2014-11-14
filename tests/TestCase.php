@@ -1,6 +1,6 @@
 <?php
 
- namespace ComposerUI\Test;
+ namespace ComposerUI\Tests;
 
  use Composer\Util\Filesystem;
  

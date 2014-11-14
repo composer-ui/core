@@ -9,13 +9,10 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="false"
-         bootstrap='tests/bootstrap.php'
 >
     <testsuites>
         <testsuite name="ComposerUI Core Test Suite">
-            <directory>./tests/ComposerUI/</directory>
-            <file>./tests/ComposerUI/TestCase.php</file>
-            <file>./tests/ComposerUI/ComposerUITest.php</file>
+            <directory>./tests/</directory>\
         </testsuite>
     </testsuites>
 </phpunit>

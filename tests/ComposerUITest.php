@@ -1,8 +1,8 @@
 <?php
 
- namespace ComposerUI\Test;
+ namespace ComposerUI\Tests;
  
- use ComposerUI\ComposerUI;
+ use ComposerUI\Core as ComposerUI;
  use Composer\Json\JsonFile;
 
  class ComposerUITest extends TestCase

@@ -7,7 +7,7 @@ use \Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Composer\Console\Application as Composer;
 
-class ComposerUI
+class Core
 {
     private $workingDirectory;
     private $verbosity;
