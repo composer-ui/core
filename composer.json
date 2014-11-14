@@ -1,0 +1,19 @@
+{
+    "name": "composer-ui/core",
+    "description": "The core API that interacts with Composer",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "CurosMJ",
+            "email": "curosmj@gmail.com"
+        }
+    ],
+    "require":
+        {
+            "composer/composer": "1.0.*@dev"
+        },
+    "require-dev": 
+        {
+            "phpunit/phpunit": "3.7.*"
+        },
+}
