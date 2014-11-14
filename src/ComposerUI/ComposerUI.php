@@ -48,7 +48,7 @@ class ComposerUI
     
     public function setVerbosity($verbosity)
     {
-        if(in_array($verbosity,array(self::VERBOSITY_DEBUG,self::VERBOSITY_MORE,self::VERBOSITY_DEBUG)))
+        if(in_array($verbosity,array(self::VERBOSITY_NORMAL,self::VERBOSITY_MORE,self::VERBOSITY_DEBUG)))
             return $this->verbosity = $verbosity;
         else
             throw new \InvalidArgumentException;
