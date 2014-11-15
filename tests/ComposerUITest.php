@@ -27,13 +27,14 @@
                             "monolog/monolog" => "1.0"
                             )));
         $app = new ComposerUI($tempDir);
+        $vendorDir = $tempDir.DIRECTORY_SEPARATOR.'vendor';
         
         $this->assertTrue($app->install());
-        $this->assertTrue(is_dir($tempDir.DIRECTORY_SEPARATOR.'vendor'));
-        $this->assertTrue(is_dir($tempDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'seld'));
-        $this->assertTrue(is_dir($tempDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'seld'.DIRECTORY_SEPARATOR.'jsonlint'));
-        $this->assertTrue(is_dir($tempDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'monolog'));
-        $this->assertTrue(is_dir($tempDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'monolog'.DIRECTORY_SEPARATOR.'monolog'));
+        $this->assertFileExists($vendorDir);
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'seld');
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'seld'.DIRECTORY_SEPARATOR.'jsonlint');
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'monolog');
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'monolog'.DIRECTORY_SEPARATOR.'monolog');
        
         return $tempDir;
     }
@@ -58,6 +59,30 @@
         $this->assertTrue(is_dir($tempDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'nesbot'));
         $this->assertTrue(is_dir($tempDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'nesbot'.DIRECTORY_SEPARATOR.'carbon'));
         
+    }
+    
+    public function testCreateProject()
+    {
+        $tempDir = $this->createTempDir();
+        $app = new ComposerUI($tempDir);
+        
+        $this->assertTrue($app->createProject('seld/jsonlint','1.0'));
+        $this->assertFileExists($tempDir.DIRECTORY_SEPARATOR.'jsonlint');
+        
+        $this->assertTrue($app->createProject('seld/jsonlint','1.0','testing'));
+        $this->assertFileExists($tempDir.DIRECTORY_SEPARATOR.'testing');
+    }
+    public function testRequire()
+    {
+        $tempDir = $this->createTempDir();
+        $app = new ComposerUI($tempDir);
+        $vendorDir = $tempDir.DIRECTORY_SEPARATOR.'vendor';
+        
+        $this->assertTrue($app->require(array('seld/jsonlint'=>'1.0','nesbot/carbon'=>'1.0')));
+        $this->assertFileExists($tempDir.DIRECTORY_SEPARATOR.'composer.json');
+        $this->assertFileExists($vendorDir);
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'nesbot');
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'seld');
     }
  }
 ?>

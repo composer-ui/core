@@ -65,6 +65,10 @@ class Core
         $input = $this->makeInput($command);
         return $this->runComposer($input);
     }
+    protected function createFullPackageName($package,$version)
+    {
+        return $package.':'.$version;
+    }
     public function __call($method,$arguments)
     {
         if(in_array($method,array('install','update','dump-autoload')))
@@ -75,18 +79,19 @@ class Core
             throw new \BadMethodCallException;
     }
     
-    public function req($package)
+    protected function req(array $packages)
     {
-        $input = $this->makeInput('require',array(
-            'package'=>$package
-        ));
+        $inputArray = array();
+        foreach($packages as $package => $version)
+            $inputArray['packages'][] = $this->createFullPackageName ($package, $version);
+        $input = $this->makeInput('require',$inputArray);
         return $this->runComposer($input);
     }
-    
-    public function createProject($package,$directory = null)
+    public function createProject($package,$version,$directory = null)
     {
         $input = $this->makeInput('create-project',array(
             'package'=>$package,
+            'version'=>$version,
             'directory'=>$directory
                 ));
         return $this->runComposer($input);
@@ -99,7 +104,7 @@ class Core
             $this->parseVerbosity() => null, 
             "--working-dir" => $this->getWorkingDirectory(),
             "--no-interaction" => null);
-        array_merge($input, $arguments);
+        $input = array_merge($input, $arguments);
         return new ArrayInput($input);
     }
 
