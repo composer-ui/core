@@ -65,9 +65,13 @@ class Core
         $input = $this->makeInput($command);
         return $this->runComposer($input);
     }
-    protected function createFullPackageName($package,$version)
+    public function createFullPackageName($package,$version)
     {
         return $package.':'.$version;
+    }
+    public function makeAuthorString($name,$email)
+    {
+        return sprintf("%s <%s>",$name,$email);
     }
     public function __call($method,$arguments)
     {
@@ -96,19 +100,37 @@ class Core
                 ));
         return $this->runComposer($input);
     }
-    
-    protected function makeInput($command,$arguments = array())
+    public function init(array $inputOptions)
+    {
+        $options = array();
+        foreach($inputOptions as $key => $value)
+        {  
+            if($key[0] !== '-') 
+                $key = '--'.$key;
+            $options[$key] = $value;
+        }
+        $input = $this->makeInput('init',$options);
+        return $this->runComposer($input);
+    }
+    public function remove(array $packages,$isDev = false)
+    {
+        $arguments = array('packages'=>$packages);
+        if($isDev) 
+            $arguments['--dev'] = null;
+        $input = $this->makeInput('remove',$arguments);
+        return $this->runComposer($input);
+    }
+    private function makeInput($command,$arguments = array())
     {
         $input = array(
             'command' => $command,
             $this->parseVerbosity() => null, 
             "--working-dir" => $this->getWorkingDirectory(),
             "--no-interaction" => null);
-        $input = array_merge($input, $arguments);
-        return new ArrayInput($input);
+        return new ArrayInput(array_merge($input, $arguments));
     }
 
-    protected function runComposer(InputInterface $input)
+    private function runComposer(InputInterface $input)
     {
         $app = new Composer();
         $app->setAutoExit(false);

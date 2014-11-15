@@ -25,16 +25,18 @@
                     "require" => array(
                             "seld/jsonlint" => "1.0",
                             "monolog/monolog" => "1.0"
-                            )));
+                            ),
+                    "require-dev" => array(
+                            "phpunit/phpunit" => "3.7.*"
+                    )));
         $app = new ComposerUI($tempDir);
         $vendorDir = $tempDir.DIRECTORY_SEPARATOR.'vendor';
         
         $this->assertTrue($app->install());
         $this->assertFileExists($vendorDir);
-        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'seld');
         $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'seld'.DIRECTORY_SEPARATOR.'jsonlint');
-        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'monolog');
         $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'monolog'.DIRECTORY_SEPARATOR.'monolog');
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'phpunit');
        
         return $tempDir;
     }
@@ -52,11 +54,8 @@
         
         $this->assertTrue($app->update($tempDir));
         $this->assertTrue(is_dir($tempDir.DIRECTORY_SEPARATOR.'vendor'));
-        $this->assertTrue(is_dir($tempDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'seld'));
         $this->assertTrue(is_dir($tempDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'seld'.DIRECTORY_SEPARATOR.'jsonlint'));
-        $this->assertTrue(is_dir($tempDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'monolog'));
         $this->assertTrue(is_dir($tempDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'monolog'.DIRECTORY_SEPARATOR.'monolog'));
-        $this->assertTrue(is_dir($tempDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'nesbot'));
         $this->assertTrue(is_dir($tempDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'nesbot'.DIRECTORY_SEPARATOR.'carbon'));
         
     }
@@ -81,8 +80,85 @@
         $this->assertTrue($app->require(array('seld/jsonlint'=>'1.0','nesbot/carbon'=>'1.0')));
         $this->assertFileExists($tempDir.DIRECTORY_SEPARATOR.'composer.json');
         $this->assertFileExists($vendorDir);
-        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'nesbot');
-        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'seld');
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'nesbot'.DIRECTORY_SEPARATOR.'carbon');
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'seld'.DIRECTORY_SEPARATOR.'jsonlint');
+    }
+    /**
+     * @depends testInstall
+     */
+    public function testRequireAfterInstall($tempDir)
+    {
+        $app = new ComposerUI($tempDir);
+        $vendorDir = $tempDir.DIRECTORY_SEPARATOR.'vendor';
+        
+        $this->assertTrue($app->require(array('seld/jsonlint'=>'1.0','nesbot/carbon'=>'1.0')));
+        $this->assertFileExists($tempDir.DIRECTORY_SEPARATOR.'composer.json');
+        $this->assertFileExists($vendorDir);
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'nesbot'.DIRECTORY_SEPARATOR.'carbon');
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'seld'.DIRECTORY_SEPARATOR.'jsonlint');
+    }
+    public function testInit()
+    {
+        $tempDir = $this->createTempDir();
+        $app = new ComposerUI($tempDir);
+        $options = array(
+            'name'=>'test/test',
+            'author' => $app->makeAuthorString('TestAuthor','author@example.com'),
+            'description' => 'a test package',
+            'homepage'=>'http://example.com',
+            'require'=>array(
+                $app->createFullPackageName('seld/jsonlint','1.0'),
+                $app->createFullPackageName('nesbot/carbon','1.0')
+            ),
+            'require-dev'=>array(
+                $app->createFullPackageName('phpunit/phpunit','3.7.*')
+            ),
+            'stability'=>'dev',
+            'license'=>'MIT'
+        );
+        $vendorDir = $tempDir.DIRECTORY_SEPARATOR.'vendor';
+        
+        $this->assertTrue($app->init($options));
+        $this->assertFileExists($vendorDir);
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'seld'.DIRECTORY_SEPARATOR.'jsonlint');
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'nesbot'.DIRECTORY_SEPARATOR.'carbon');
+        $this->assertFileExists($tempDir.DIRECTORY_SEPARATOR.'composer.json');
+        
+        $json = json_decode($tempDir.DIRECTORY_SEPARATOR.'composer.json',true);
+        
+        $this->assertArrayHasKey('name',$json);
+        $this->assertArrayHasKey('require',$json);
+        $this->assertArrayHasKey('author',$json);
+        $this->assertArrayHasKey('description',$json);
+        $this->assertArrayHasKey('homepage',$json);
+    }
+    /**
+     * @depends testInstall
+     */
+    public function testRemove($tempDir)
+    {
+        $app = new ComposerUI($tempDir);
+        $vendorDir = $tempDir.DIRECTORY_SEPARATOR.'vendor';
+        
+        $this->assertTrue($app->remove(array("monolog/monolog")));
+        $this->assertFileExists($vendorDir);
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'seld'.DIRECTORY_SEPARATOR.'jsonlint');
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'monolog'.DIRECTORY_SEPARATOR.'monolog');
+        $this->assertFileNotExists($vendorDir.DIRECTORY_SEPARATOR.'monolog');
+    }
+    /**
+     * @depends testInstall
+     */
+    public function testRemoveDev($tempDir)
+    {
+        $app = new ComposerUI($tempDir);
+        $vendorDir = $tempDir.DIRECTORY_SEPARATOR.'vendor';
+        
+        $this->assertTrue($app->remove(array("phpunit/phpunit"),true));
+        $this->assertFileExists($vendorDir);
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'seld'.DIRECTORY_SEPARATOR.'jsonlint');
+        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'monolog'.DIRECTORY_SEPARATOR.'monolog');
+        $this->assertFileNotExists($vendorDir.DIRECTORY_SEPARATOR.'monolog');
     }
  }
 ?>
