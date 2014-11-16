@@ -99,6 +99,7 @@
     }
     public function testInit()
     {
+        echo "\n\ntesting init\n\n";
         $tempDir = $this->createTempDir();
         $app = new ComposerUI($tempDir);
         $options = array(
@@ -116,49 +117,39 @@
             'stability'=>'dev',
             'license'=>'MIT'
         );
-        $vendorDir = $tempDir.DIRECTORY_SEPARATOR.'vendor';
         
         $this->assertTrue($app->init($options));
-        $this->assertFileExists($vendorDir);
-        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'seld'.DIRECTORY_SEPARATOR.'jsonlint');
-        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'nesbot'.DIRECTORY_SEPARATOR.'carbon');
         $this->assertFileExists($tempDir.DIRECTORY_SEPARATOR.'composer.json');
         
-        $json = json_decode($tempDir.DIRECTORY_SEPARATOR.'composer.json',true);
+        $json = JsonFile::parseJson(file_get_contents($tempDir.DIRECTORY_SEPARATOR.'composer.json'));
         
         $this->assertArrayHasKey('name',$json);
         $this->assertArrayHasKey('require',$json);
-        $this->assertArrayHasKey('author',$json);
+        $this->assertArrayHasKey('authors',$json);
         $this->assertArrayHasKey('description',$json);
         $this->assertArrayHasKey('homepage',$json);
     }
-    /**
-     * @depends testInstall
-     */
-    public function testRemove($tempDir)
+    public function testRemove()
     {
+        $tempDir = $this->testInstall();
         $app = new ComposerUI($tempDir);
         $vendorDir = $tempDir.DIRECTORY_SEPARATOR.'vendor';
         
         $this->assertTrue($app->remove(array("monolog/monolog")));
         $this->assertFileExists($vendorDir);
         $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'seld'.DIRECTORY_SEPARATOR.'jsonlint');
-        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'monolog'.DIRECTORY_SEPARATOR.'monolog');
-        $this->assertFileNotExists($vendorDir.DIRECTORY_SEPARATOR.'monolog');
+        $this->assertFileNotExists($vendorDir.DIRECTORY_SEPARATOR.'monolog'.DIRECTORY_SEPARATOR.'monolog');
     }
-    /**
-     * @depends testInstall
-     */
-    public function testRemoveDev($tempDir)
+    public function testRemoveDev()
     {
+        $tempDir = $this->testInstall();
         $app = new ComposerUI($tempDir);
         $vendorDir = $tempDir.DIRECTORY_SEPARATOR.'vendor';
         
         $this->assertTrue($app->remove(array("phpunit/phpunit"),true));
         $this->assertFileExists($vendorDir);
         $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'seld'.DIRECTORY_SEPARATOR.'jsonlint');
-        $this->assertFileExists($vendorDir.DIRECTORY_SEPARATOR.'monolog'.DIRECTORY_SEPARATOR.'monolog');
-        $this->assertFileNotExists($vendorDir.DIRECTORY_SEPARATOR.'monolog');
+        $this->assertFileNotExists($vendorDir.DIRECTORY_SEPARATOR.'phpunit'.DIRECTORY_SEPARATOR.'phpunit');
     }
  }
 ?>
