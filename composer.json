@@ -10,7 +10,7 @@
     ],
     "require":
         {
-            "composer/composer": "1.0.*@dev"
+            "composer/composer": "dev-master"
         },
     "require-dev": 
         {
