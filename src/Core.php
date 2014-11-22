@@ -25,7 +25,9 @@ class Core
 
     public function setWorkingDirectory($workingDirectory)
     {
-        return $this->workingDirectory = $workingDirectory;
+        if(is_string($workingDirectory))    
+            return $this->workingDirectory = $workingDirectory;
+        else throw new \InvalidArgumentException("The working directory should be a string");
     }
     
     public function getWorkingDirectory()

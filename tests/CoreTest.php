@@ -5,7 +5,7 @@
  use ComposerUI\Core as ComposerUI;
  use Composer\Json\JsonFile;
 
- class ComposerUITest extends TestCase
+ class CoreTest extends TestCase
  {
     protected function createTempDir()
     {
