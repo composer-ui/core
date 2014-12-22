@@ -75,6 +75,19 @@ class Core
     {
         return sprintf("%s <%s>",$name,$email);
     }
+    public function run($action,$arguments)
+    {
+        $params = array();
+        $notOptions = array('package','packages','version','directory');
+        foreach($arguments as $key => $value)
+        {  
+            if($key[0] !== '-' && !in_array($key, $notOptions)) 
+                $key = '--'.$key;
+            $params[$key] = $value;
+        }
+        $input = $this->makeInput($action,$params);
+        return $this->runComposer($input);
+    }
     public function __call($method,$arguments)
     {
         if(in_array($method,array('install','update','dump-autoload')))
@@ -140,5 +153,3 @@ class Core
     }
 
 }
-
-?>
